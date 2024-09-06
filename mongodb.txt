@@ -1,1 +1,36 @@
 mongosh "mongodb+srv://cluster0.oukkq7r.mongodb.net/" --apiVersion 1 --username sk4118251
+
+
+
+import mongoose from "mongoose";
+import { DB_NAME } from "./constants.js"; 
+import express from "express";
+import dotenv from "dotenv";
+
+dotenv.config({
+    path: 'env'
+})
+
+const app = express();
+;(async ()=>{
+    try {
+       await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+
+       app.on("error", (error)=>{
+        console.log("ERROR:", error);
+        throw error
+       })
+
+    // console log the data present in the users document of test collection
+       
+       const admins = await mongoose.connection.db.collection('admins').find({}).toArray();
+       console.log(admins);
+
+       app.listen(process.env.PORT, ()=>{
+        console.log("APP IS LISTENING ON PORT: ", process.env.PORT);
+       } )
+    } catch (error) {
+        console.error("ERROR", error);
+        throw error
+    }
+})()

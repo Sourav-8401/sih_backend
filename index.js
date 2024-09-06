@@ -1,30 +1,17 @@
-// import mongoose from "mongoose";
-// import { DB_NAME } from "./constants"; //DB_NAME = "test"
-// import express from "express";
-
-const mongoose = require("mongoose");
-const express = require("express");
-
+import mongoose from "mongoose";
+import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./src/db/index.js";
 const app = express();
-;(async ()=>{
-    try {
-       await mongoose.connect("mongodb+srv://nirmaan:gREIw99FDSJYFr1B@cluster0.oukkq7r.mongodb.net/test");
+import cors from "cors";
 
-       app.on("error", (error)=>{
-        console.log("ERROR:", error);
-        throw error
-       })
+dotenv.config({
+    path: 'env'
+})
 
-    // console log the data present in the users document of test collection
-       
-       const admins = await mongoose.connection.db.collection('souravs').find({}).toArray();
-       console.log(admins);
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.static("public")); // configure static file to save images locally
+app.use(cors());
 
-       app.listen(process.env.PORT, ()=>{
-        console.log("APP IS LISTENING ON PORT: ", process.env.PORT);
-       } )
-    } catch (error) {
-        console.error("ERROR", error);
-        throw error
-    }
-})()
+connectDB();

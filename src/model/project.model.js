@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
-    img : [{
+    img : {
         type:{
             url: String,
             localPath: String
@@ -10,7 +10,7 @@ const projectSchema = new mongoose.Schema({
             url: "",
             localPath:"",
         }
-    }],
+    },
     location: {latitude: String, longitude : String},
     tasks: [
         {

@@ -1,10 +1,21 @@
 import mongoose from "mongoose";
-
 const taskSchema = new mongoose.Schema({
-    buildingId : String,
-    taskTitle : String,
+    buildingId : [{
+        type: String,
+    }],  
+    img : [{
+        type: String
+    }],//cloudinary url
+    taskTitle : {
+        type: String,
+        required : true
+    },  
     location: {latitude: String, longitude : String},
-    isVerified : Boolean,
+    address : {
+        type: String,
+        required : true,
+    },
+    isVerified : { type: Boolean, default: false},
     startDate : Date,
     endDate : Date,
     assignedTo : [
@@ -13,7 +24,10 @@ const taskSchema = new mongoose.Schema({
             ref: "Worker"
         }
     ],
-    percentage : Number
+    percentage : {
+        type: Number,
+        default: 0
+    }
 
 },{timestamps: true})
 

@@ -12,7 +12,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
  * 
  * methods: 1. update address, 
  *          2. fill Task, ///
- *          3. getTask,
+ *          3. getTask, gettask by id;
  *          4. post Location from worker of the site ///
  *          5. update the progress ///
  *          6. update images
@@ -74,6 +74,9 @@ const fillTask = asyncHandler(async (req, res)=>{
             percentage
     })
     const createdTask = await Task.findById(task._id)
+    if(!createdTask){
+        throw new ApiError(500, "Something went wrong while uploading on datbase")
+    }
     return res.status(201).json(
         new ApiResponse(200, task, "Task created")
     )
@@ -81,13 +84,31 @@ const fillTask = asyncHandler(async (req, res)=>{
 const getTask = asyncHandler(async (req,res)=>{
     const data = await Task.find();
     //write the code to get the tasks and return to response
+
     res.status(200).json(
         {message: "Tasks retrieved successfully",
         data
     });
 
 })
+const getTaskById = asyncHandler(async (req,res)=>{
+    const {taskId} = req.body;
+    const dataById = Task.findById(taskId);
+    if(!dataById){
+        throw new ApiError(400, "Task doesn't exist")
+    }
+})
 
+const updateLocation = asyncHandler(async (req,res)=>{
+    const {taskId, location} = req.body;
+
+    const task = await Task.findById(taskId);
+    task.location = location;
+    const isSave = task.save({validateBeforeSave : false});
+    if(!isSave){
+        throw new ApiError(500, "Something went wrong while updating location")
+    }
+})
 const fillLocation = asyncHandler(async (req, res)=>{
     const {taskId, location} = req.body;
 
@@ -121,4 +142,4 @@ const updateProgress = asyncHandler(async (req, res)=>{
 })
 
 
-export {fillTask, getTask}
+export {fillTask, getTask, getTaskById, updateLocation  }

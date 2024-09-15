@@ -41,15 +41,5 @@ const fillProject = asyncHandler(async (req,res)=>{
     }
 })
 
-const getProject = asyncHandler(async (req,res)=>{
-    const data = await Project.find();
-    if(!data){
-        throw new ApiError(500, "Data not found");
-    }
-    console.log(data);
-    res.status(201).json(
-        data
-    )
-})
 
 export {fillProject}

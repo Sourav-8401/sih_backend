@@ -3,7 +3,7 @@ import { fillProject } from "../controllers/project.controller";
 router = Router();
 
 
-router.route("fillProject").post(
+router.route("/fillProject").post(
     upload.fields([
         {
             name : 'projectImg',
@@ -14,3 +14,4 @@ router.route("fillProject").post(
 );
 
 router.route("getProject").get()
+export default router;

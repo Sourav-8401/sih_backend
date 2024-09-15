@@ -21,20 +21,15 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const fillTask = asyncHandler(async (req, res)=>{
     const {taskTitle, address, isVerified, startDate, endDate, percentage} = req.body;
     console.log("taskTitle", taskTitle);
-    console.log("taskTitle", endDate);
-    
+    console.log("taskTitle", address);
+    // console.log(req.body);
     
     if([taskTitle, address, startDate, endDate, percentage].some((fields)=>{
         fields?.trim() === "";   
     })){
         throw new ApiError(401, "All fields required");
     }
-    // const taskId = uuidv4();
-    // const existedTask = await Task.findById(task._id);
 
-    // if(existedTask){
-    //     throw new ApiError(401, "Task already existed");
-    // }
 
     let taskImgLocalFilePath = [];
     let taskImgArray = req.files['taskImg'];
@@ -47,16 +42,6 @@ const fillTask = asyncHandler(async (req, res)=>{
         taskImgLocalFilePath.push(currPath);
         console.log(currPath);
     }
-    // taskImgLocalFilePath = req.files?.taskImg[0]?.path;
-
-    // if(!taskImgLocalFilePath){
-    //     throw new ApiError(500, "Something went wrong while uploading files");
-    // }
-
-    // taskImgLocalFilePath.map(asyncHandler(async (filePath)=>{
-    //     await uploadOnCloudinary(filePath);
-    // }))
-    // const taskImg = await uploadOnCloudinary(taskImgLocalFilePath);
     let resTaskImgArray = [];
     for(let i=0; i<taskImgLocalFilePath.length; i++){
         const currTaskImg = await uploadOnCloudinary(taskImgLocalFilePath[i]);
@@ -79,17 +64,16 @@ const fillTask = asyncHandler(async (req, res)=>{
     }
     return res.status(201).json(
         new ApiResponse(200, task, "Task created")
+        // {message: "done"}
     )
 })
 const getTask = asyncHandler(async (req,res)=>{
     const data = await Task.find();
     //write the code to get the tasks and return to response
-
     res.status(200).json(
         {message: "Tasks retrieved successfully",
         data
     });
-
 })
 const getTaskById = asyncHandler(async (req,res)=>{
     const {taskId} = req.body;
@@ -142,4 +126,4 @@ const updateProgress = asyncHandler(async (req, res)=>{
 })
 
 
-export {fillTask, getTask, getTaskById, updateLocation  }
+export {fillTask, getTask, getTaskById, updateLocation }

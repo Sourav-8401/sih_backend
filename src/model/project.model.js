@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
+    projectId : String,
     img : {
         type:{
             url: String,

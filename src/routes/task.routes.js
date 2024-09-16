@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { fillTask, getTask, getTaskById, updateLocation } from "../controllers/task.controller.js";
+import { assignTask, fillTask, getTask, getTaskById, updateLocation } from "../controllers/task.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
@@ -15,5 +15,11 @@ router.route("/fillTask").post(
 router.route("/getTask").get(getTask);
 router.route("/getTaskById").get(getTaskById)
 router.route("/updateLocation").post(updateLocation)
-
+router.route("/assignTask").post(
+    upload.fields([
+        {
+            name : 'taskImg',
+            maxCount: 10
+        }
+    ]),assignTask)
 export default router

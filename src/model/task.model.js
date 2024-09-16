@@ -23,18 +23,21 @@ const taskSchema = new mongoose.Schema({
         ref: "Project"
     },
     assignedBy : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Admin"
+        phoneNo : Number
     },
-    assignedTo : [
-        {
-            type : mongoose.Schema.Types.ObjectId,
-            ref: "Worker"
-        }
-    ],
+    assignedTo : {
+        phoneNo : Number
+    },
     progress : {
         type: Number,
         default: 0
+    },
+    tests : {
+        slumpTest : {
+            data1 : String,
+            data2 : String,
+            data3 : String
+        }
     }
 
 },{timestamps: true})

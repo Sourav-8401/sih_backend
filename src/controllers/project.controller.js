@@ -3,7 +3,7 @@ import { Project } from "../model/project.model";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import uploadOnCloudinary from "../utils/cloudinary";
-
+import { v4 } from "uuid";
 /**
  * checks whether the req data are there are not
  * 
@@ -27,7 +27,9 @@ const fillProject = asyncHandler(async (req,res)=>{
         }
         imgResArray.push(currImgPath);
     }
+    const projectId = v4();
     const project = await Project.create({
+        projectId,
         img : imgResArray || "",
         location,
         tasks,

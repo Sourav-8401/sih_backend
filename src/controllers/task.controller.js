@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { v4 as uuidv4 } from "uuid";
+import { Worker } from "../model/worker.model.js";
 /**
  * admin will allot the task 
  * post req of the -: building id , img, taskTitle, address, 
@@ -20,36 +21,37 @@ import { v4 as uuidv4 } from "uuid";
  *          7. update the task
  */
 const fillTask = asyncHandler(async (req, res)=>{
-    const {taskTitle, address, isVerified, startDate, endDate, percentage} = req.body;
+    const {taskTitle, govBody, location, test, address, isVerified, startDate, endDate, progress,} = req.body;
     console.log("taskTitle", taskTitle);
     console.log("taskTitle", address);
     // console.log(req.body);
     
-    if([taskTitle, address, startDate, endDate, percentage].some((fields)=>{
+    if([taskTitle, address, startDate, endDate, progress].some((fields)=>{
         fields?.trim() === "";   
     })){
         throw new ApiError(401, "All fields required");
     }
 
 
-    let taskImgLocalFilePath = [];
     let taskImgArray = req.files['taskImg'];
-
-    for(let i=0; i<taskImgArray.length; i++){
-        let currPath = taskImgArray[i]?.path;
-        if(!currPath){
-            throw new ApiError(500, "Something went wrong while uploading files");
-        }
-        taskImgLocalFilePath.push(currPath);
-        console.log(currPath);
-    }
     let resTaskImgArray = [];
-    for(let i=0; i<taskImgLocalFilePath.length; i++){
-        const currTaskImg = await uploadOnCloudinary(taskImgLocalFilePath[i]);
-        if(!currTaskImg){
-            throw new ApiError(400, "Task img is required went wrong while uploading on cloudinary");
+    if(taskImgArray){
+        let taskImgLocalFilePath = [];
+        for(let i=0; i<taskImgArray.length; i++){
+            let currPath = taskImgArray[i]?.path;
+            if(!currPath){
+                throw new ApiError(500, "Something went wrong while uploading files");
+            }
+            taskImgLocalFilePath.push(currPath);
+            console.log(currPath);
         }
-        resTaskImgArray.push(currTaskImg.url);
+        for(let i=0; i<taskImgLocalFilePath.length; i++){
+            const currTaskImg = await uploadOnCloudinary(taskImgLocalFilePath[i]);
+            if(!currTaskImg){
+                throw new ApiError(400, "Task img is required went wrong while uploading on cloudinary");
+            }
+            resTaskImgArray.push(currTaskImg.url);
+        }
     }
     const taskId = uuidv4();
     const task = await Task.create({
@@ -59,7 +61,10 @@ const fillTask = asyncHandler(async (req, res)=>{
             address,
             startDate,
             endDate,
-            percentage
+            progress,
+            test,
+            govBody
+
     })
     const createdTask = await Task.findById(task._id)
     if(!createdTask){
@@ -116,17 +121,43 @@ const updateProgress = asyncHandler(async (req, res)=>{
     const {taskId, progress} = req.body;
 
     if(progress === ""){
-        throw ApiError(401, 'progress required');
+        throw new  ApiError(401, 'progress required');
     }
-    const task = await Task.updateOne({_id: taskId}, {
+    const task = await Task.updateOne({taskId: taskId}, {
         $set : {
-            percentage : progress
+            progress : progress
         }
     })
     if(!task){
-        return ApiError(500, "Something went wrong while updating progress")
+        throw new ApiError(500, "Something went wrong while updating progress")
     }
 })
 
+const assignTask = asyncHandler(async(req, res)=>{
+    const {workerPhoneNo, adminPhoneNo, taskOId} = req.body;
 
-export {fillTask, getTask, getTaskById, updateLocation }
+    if(!workerPhoneNo || !adminPhoneNo || !taskOId){
+        throw new ApiError(401, "All fields required for assigningTask");
+    }
+    const worker = await Worker.findOne({phoneNo: workerPhoneNo});
+    const task = await Task.findById(taskOId);
+    if(!worker){
+        throw new ApiError(401, "Worker doesn't exist")
+    }
+    if(!task){
+        throw new ApiError(501, "Task not found by given Id")
+    }
+    worker.assignedTask.push(taskOId);
+    task.assignedTo.phoneNo = workerPhoneNo;
+    task.assignedBy.phoneNo = adminPhoneNo;
+    await task.save();
+    await worker.save();
+
+    return res.status(200).json({
+        message : "task assigned successfully",
+        task
+    })
+
+})
+
+export {fillTask, getTask, getTaskById, updateLocation, assignTask}

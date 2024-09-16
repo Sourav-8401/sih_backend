@@ -34,6 +34,7 @@ const fillTask = asyncHandler(async (req, res)=>{
 
 
     let taskImgArray = req.files['taskImg'];
+    // console.log("taskImgARRAY: ", taskImgArray)
     let resTaskImgArray = [];
     if(taskImgArray){
         let taskImgLocalFilePath = [];
@@ -48,7 +49,7 @@ const fillTask = asyncHandler(async (req, res)=>{
         for(let i=0; i<taskImgLocalFilePath.length; i++){
             const currTaskImg = await uploadOnCloudinary(taskImgLocalFilePath[i]);
             if(!currTaskImg){
-                throw new ApiError(400, "Task img is required went wrong while uploading on cloudinary");
+                throw new ApiError(400, "Something went wrong while uploading on cloudinary");
             }
             resTaskImgArray.push(currTaskImg.url);
         }

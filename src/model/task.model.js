@@ -23,10 +23,10 @@ const taskSchema = new mongoose.Schema({
         ref: "Project"
     },
     assignedBy : {
-        phoneNo : Number
+        phoneNo : Number //Admin phone NO
     },
     assignedTo : {
-        phoneNo : Number
+        phoneNo : Number //Worker phone NO
     },
     progress : {
         type: Number,

@@ -13,5 +13,5 @@ router.route("/fillProject").post(
     fillProject
 );
 
-router.route("getProject").get()
+// router.route("/getProject").get()
 export default router;

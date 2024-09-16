@@ -5,28 +5,17 @@ import { upload } from "../middleware/multer.middleware.js";
 const router = Router();
 
 router.route("/registerAdmin").post(    
-    upload.fields([
-    {
-        name : 'taskImg',
-        maxCount: 10
-    }
-]),
-registerAdmin);
+    upload.single('avatar'),
+    registerAdmin
+  );
+
 router.route("/assignProject").post(
-  upload.fields([
-    {
-      name: "projectImg",
-      maxCount: 10,
-    },
-  ]),
+  upload.array('projectImg',12),
   assignProject
 );
 
-router.route("/getProjects").post(  upload.fields([
-    {
-      name: "projectImg",
-      maxCount: 10,
-    },
-  ]),
+router.route("/getProjects").post( 
+  upload.none(),
   getProjects);
+
 export default router

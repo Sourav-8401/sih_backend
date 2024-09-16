@@ -16,10 +16,6 @@ router.route("/getTask").get(getTask);
 router.route("/getTaskById").get(getTaskById)
 router.route("/updateLocation").post(updateLocation)
 router.route("/assignTask").post(
-    upload.fields([
-        {
-            name : 'taskImg',
-            maxCount: 10
-        }
-    ]),assignTask)
+    upload.none(),
+    assignTask)
 export default router

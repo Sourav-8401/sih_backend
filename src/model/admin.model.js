@@ -10,6 +10,7 @@ const adminSchema  = new Schema({
     phoneNo : {
         type : Number,
     },
+    avatar : String,
     govBody : String,
     location: {latitude: String, longitude : String},
     allotedWorker : [{

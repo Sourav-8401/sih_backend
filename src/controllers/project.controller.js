@@ -1,4 +1,3 @@
-import { upload } from "../middleware/multer.middleware";
 import { Project } from "../model/project.model";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";

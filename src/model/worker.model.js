@@ -7,6 +7,7 @@ const workerSchema  = new Schema({
         required : true,
         unique: true,
     },
+    avatar : String,
     location: {latitude: String, longitude : String},
     isVerified : {type : Boolean, default: false},
     allotedArea : String, 

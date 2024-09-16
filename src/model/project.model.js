@@ -2,16 +2,7 @@ import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
     projectId : String,
-    img : {
-        type:{
-            url: String,
-            localPath: String
-        },
-        default: {
-            url: "",
-            localPath:"",
-        }
-    },
+    img : [String],
     adminPhoneNo: Number,
     adminName: String,
     address: String,

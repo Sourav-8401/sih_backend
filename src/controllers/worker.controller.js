@@ -2,11 +2,23 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Worker } from "../model/worker.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Task } from "../model/task.model.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 const registerWorker= asyncHandler(async(req,res)=>{
     const {fullName, phoneNo, location, isVerified, allotedArea, addhaarNo} = req.body;
     console.log(fullName)
+
+
+    const avatar = req.file;
+    let resAvatar;
+    if(avatar){
+        resAvatar = await uploadOnCloudinary(avatar?.path);
+        if(!resAvatar){
+            throw new ApiError(401, "Something went wrong while uploading on cloudinary")
+        }
+    }
     const worker = await Worker.create({
         fullName,
+        avatar : resAvatar.url || "",
         phoneNo,
         location,
         allotedArea,

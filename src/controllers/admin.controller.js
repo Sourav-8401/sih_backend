@@ -8,15 +8,26 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 const registerAdmin = asyncHandler(async (req,res)=>{
     const {adminId, fullName, phoneNo, govBody, location, allotedWorker, projects} = req.body;
     const existedUser = await Admin.findOne({phoneNo : phoneNo});
-    console.log("FullName",fullName);
+    console.log("FullName",adminId);
     if(existedUser){
         throw new ApiError(409, "User already existed")
+    }
+    
+    let avatar = req.file;
+    // console.log(avatar);
+    let uploadAvatar;
+    if(avatar){
+        uploadAvatar = await uploadOnCloudinary(avatar?.path);
+        if(!uploadAvatar){
+            throw new ApiError(400, "Something went wrong while uploading on cloudinary");
+        }
     }
 
     const admin = await Admin.create({
         adminId,
         fullName,
-        phoneNo : phoneNo || 840,
+        avatar : uploadAvatar?.url || "",
+        phoneNo : phoneNo,
         govBody,
         location,
         allotedWorker,
@@ -27,7 +38,8 @@ const registerAdmin = asyncHandler(async (req,res)=>{
         throw new ApiError(501, "something went wrong while creating new Admin")
     }
     return res.status(200).json({
-        message: "succesfully created admin"
+        message: "succesfully created admin",
+        admin
     })
 });
 
@@ -39,19 +51,22 @@ const assignProject = asyncHandler(async(req, res)=>{
         throw new ApiError(401, "something went wrong while finding Admin")
     }
 
-    // const imgResArray = []
-    // const imgFileArray = req.files['projectImg'];
-
-    // for(let i=0; i<imgFileArray.length; i++){
-    //     const currImgPath = uploadOnCloudinary(imgFileArray[i].path);
-    //     if(!currImgPath){
-    //         throw new ApiError(500, "Something went wrong uploading on database");
-    //     }
-    //     imgResArray.push(currImgPath);
-    // }
+    const imgResArray = []
+    const imgFileArray = req.files;
+    // console.log(imgFileArray);
+    if(imgFileArray){
+        for(let i=0; i<imgFileArray.length; i++){
+            const currImgPath = await uploadOnCloudinary(imgFileArray[i].path);
+            if(!currImgPath){
+                throw new ApiError(500, "Something went wrong uploading on database");
+            }
+            // console.log(currImgPath);
+            imgResArray.push(currImgPath.url);
+        }
+    }
 
     const project = await Project.create({
-        // img : imgResArray || "",
+        img : imgResArray || "",
         location,
         tasks,
         govBody,
@@ -85,11 +100,6 @@ const getProjects = asyncHandler(async (req, res)=>{
     if(!projectsArray){
         throw new ApiError(501, "No projects found")   
     }
-    // let returnProjectsArray = [];
-    // for(let i=0; i<projectsArray.length; i++){
-    //     const project = await Project.findById(projectsArray[i]);
-    //     returnProjectsArray.push(project);
-    // }
     const returnProjectsArray = await Promise.all(
         projectsArray.map(async (projectId)=>{
             return await Project.findById(projectId);

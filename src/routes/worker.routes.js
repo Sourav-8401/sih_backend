@@ -10,6 +10,10 @@ router.route("/registerWorker").post(upload.fields([
         maxCount: 10
     }
 ]),registerWorker);
-router.route("/getWorker").post(getWorker)
-// router.route("/loginWorker").post(loginAdmin);
+router.route("/getWorker").post(upload.fields([
+    {
+        name : 'workerImg',
+        maxCount: 10
+    }
+]),getWorker)
 export default router

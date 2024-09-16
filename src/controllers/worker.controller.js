@@ -1,7 +1,8 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Worker } from "../model/worker.model.js";
+import { ApiError } from "../utils/ApiError.js";
 const registerWorker= asyncHandler(async(req,res)=>{
-    const {fullName, phoneNo, location, isVerified, allotedArea, addhaarNo, assignedTask} = req.body;
+    const {fullName, phoneNo, location, isVerified, allotedArea, addhaarNo} = req.body;
     console.log(fullName)
     const worker = await Worker.create({
         fullName,
@@ -9,7 +10,6 @@ const registerWorker= asyncHandler(async(req,res)=>{
         location,
         allotedArea,
         addhaarNo,
-        assignedTask,  
     })
     if(!worker){
         throw new ApiError(500, "Something went wrong while uploading on datbase")

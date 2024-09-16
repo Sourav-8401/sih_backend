@@ -12,7 +12,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
  * 
  * methods: 1. update address, 
  *          2. fill Task, ///
- *          3. getTask,
+ *          3. getTask, gettask by id;
  *          4. post Location from worker of the site ///
  *          5. update the progress ///
  *          6. update images
@@ -21,20 +21,15 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const fillTask = asyncHandler(async (req, res)=>{
     const {taskTitle, address, isVerified, startDate, endDate, percentage} = req.body;
     console.log("taskTitle", taskTitle);
-    console.log("taskTitle", endDate);
-    
+    console.log("taskTitle", address);
+    // console.log(req.body);
     
     if([taskTitle, address, startDate, endDate, percentage].some((fields)=>{
         fields?.trim() === "";   
     })){
         throw new ApiError(401, "All fields required");
     }
-    // const taskId = uuidv4();
-    // const existedTask = await Task.findById(task._id);
 
-    // if(existedTask){
-    //     throw new ApiError(401, "Task already existed");
-    // }
 
     let taskImgLocalFilePath = [];
     let taskImgArray = req.files['taskImg'];
@@ -47,16 +42,6 @@ const fillTask = asyncHandler(async (req, res)=>{
         taskImgLocalFilePath.push(currPath);
         console.log(currPath);
     }
-    // taskImgLocalFilePath = req.files?.taskImg[0]?.path;
-
-    // if(!taskImgLocalFilePath){
-    //     throw new ApiError(500, "Something went wrong while uploading files");
-    // }
-
-    // taskImgLocalFilePath.map(asyncHandler(async (filePath)=>{
-    //     await uploadOnCloudinary(filePath);
-    // }))
-    // const taskImg = await uploadOnCloudinary(taskImgLocalFilePath);
     let resTaskImgArray = [];
     for(let i=0; i<taskImgLocalFilePath.length; i++){
         const currTaskImg = await uploadOnCloudinary(taskImgLocalFilePath[i]);
@@ -74,8 +59,12 @@ const fillTask = asyncHandler(async (req, res)=>{
             percentage
     })
     const createdTask = await Task.findById(task._id)
+    if(!createdTask){
+        throw new ApiError(500, "Something went wrong while uploading on datbase")
+    }
     return res.status(201).json(
         new ApiResponse(200, task, "Task created")
+        // {message: "done"}
     )
 })
 const getTask = asyncHandler(async (req,res)=>{
@@ -85,9 +74,25 @@ const getTask = asyncHandler(async (req,res)=>{
         {message: "Tasks retrieved successfully",
         data
     });
-
+})
+const getTaskById = asyncHandler(async (req,res)=>{
+    const {taskId} = req.body;
+    const dataById = Task.findById(taskId);
+    if(!dataById){
+        throw new ApiError(400, "Task doesn't exist")
+    }
 })
 
+const updateLocation = asyncHandler(async (req,res)=>{
+    const {taskId, location} = req.body;
+
+    const task = await Task.findById(taskId);
+    task.location = location;
+    const isSave = task.save({validateBeforeSave : false});
+    if(!isSave){
+        throw new ApiError(500, "Something went wrong while updating location")
+    }
+})
 const fillLocation = asyncHandler(async (req, res)=>{
     const {taskId, location} = req.body;
 
@@ -121,4 +126,4 @@ const updateProgress = asyncHandler(async (req, res)=>{
 })
 
 
-export {fillTask, getTask}
+export {fillTask, getTask, getTaskById, updateLocation }

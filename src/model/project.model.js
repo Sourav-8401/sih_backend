@@ -11,6 +11,9 @@ const projectSchema = new mongoose.Schema({
             localPath:"",
         }
     },
+    adminPhoneNo: Number,
+    adminName: String,
+    address: String,
     location: {latitude: String, longitude : String},
     tasks: [
         {
@@ -18,7 +21,7 @@ const projectSchema = new mongoose.Schema({
             ref : "Task"
         }
     ],
-    govBody: string,
+    govBody: String,
     startDate: Date,
     endDate: Date,
 

@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { v4 as uuidv4 } from "uuid";
 /**
  * admin will allot the task 
  * post req of the -: building id , img, taskTitle, address, 
@@ -50,7 +51,9 @@ const fillTask = asyncHandler(async (req, res)=>{
         }
         resTaskImgArray.push(currTaskImg.url);
     }
+    const taskId = uuidv4();
     const task = await Task.create({
+            taskId,
             taskTitle,
             img : resTaskImgArray || "",
             address,

@@ -19,7 +19,9 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import taskRouter from "./routes/task.routes.js";
 import adminRouter from "./routes/admin.routes.js"
+import workerRouter from "./routes/worker.routes.js"
 app.use("/users",userRouter)
 app.use("/tasks",taskRouter)
 app.use("/admins",adminRouter)
+app.use("/worker",workerRouter)
 export {app}

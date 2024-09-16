@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 const taskSchema = new mongoose.Schema({
-    buildingId : [{
+    taskId : {
         type: String,
-    }],  
+    },  
     img : [{
         type: String
     }],//cloudinary url
@@ -18,13 +18,21 @@ const taskSchema = new mongoose.Schema({
     isVerified : { type: Boolean, default: false},
     startDate : Date,
     endDate : Date,
+    forProject : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref: "Project"
+    },
+    assignedBy : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Admin"
+    },
     assignedTo : [
         {
             type : mongoose.Schema.Types.ObjectId,
             ref: "Worker"
         }
     ],
-    percentage : {
+    progress : {
         type: Number,
         default: 0
     }

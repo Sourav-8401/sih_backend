@@ -9,8 +9,8 @@ const workerSchema  = new Schema({
     },
     location: {latitude: String, longitude : String},
     isVerified : {type : Boolean, default: false},
-    alloted_area : String, 
-    adhaarNo : {
+    allotedArea : String, 
+    addhaarNo : {
       type: String,
       unique: true  
     },
@@ -20,7 +20,7 @@ const workerSchema  = new Schema({
     }],
     tokens : [
         {
-            token:{type: String, required: true},
+            token:{type: String},
         }
     ],
 },{timestamps: true})

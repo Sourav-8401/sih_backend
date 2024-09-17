@@ -13,10 +13,10 @@ const projectSchema = new mongoose.Schema({
             ref : "Task"
         }
     ],
+    description: String,
     govBody: String,
     startDate: Date,
     endDate: Date,
-
 },{timestamps: true})
 
 export const Project = mongoose.model("Project", projectSchema)

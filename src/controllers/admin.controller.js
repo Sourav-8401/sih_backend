@@ -46,7 +46,7 @@ const registerAdmin = asyncHandler(async (req,res)=>{
 });
 
 const assignProject = asyncHandler(async(req, res)=>{
-    const {location, tasks, govBody, startDate, endDate, address, adminPhoneNo} = req.body;
+    const {location, description, tasks, govBody, startDate, endDate, address, adminPhoneNo} = req.body;
     console.log(govBody)
     const admin = await Admin.findOne({phoneNo: adminPhoneNo});
     if(!admin){
@@ -74,6 +74,7 @@ const assignProject = asyncHandler(async(req, res)=>{
         govBody,
         startDate,
         endDate,
+        description,
         address,
         adminPhoneNo
     })

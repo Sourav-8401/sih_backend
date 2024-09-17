@@ -1,4 +1,5 @@
 import { Project } from "../model/project.model.js";
+import { Task } from "../model/task.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
@@ -88,7 +89,23 @@ const getTaskByProjectId = asyncHandler(async(req,res)=>{
     const project = await Project.findById(projectId);
     const taskArray = project.tasks;
 
-    let resTaskArray = [];
+    const resTaskArray = await Promise.all(
+        taskArray.map(async (taskId)=>{
+            const task = await Task.findById(taskId);
+            const stage = task?.stages || "noStage"
+            return {
+                task : task,
+                stage : stage
+            }
+    }))
 
+    if(!resTaskArray){
+        throw new ApiError(501, "Response generation failed")
+    }
+
+    return res.status(201).json(
+        resTaskArray
+    )
 })
-export {fillProject, getAllProject, updateLocation}
+
+export {fillProject, getAllProject, updateLocation, getTaskByProjectId}

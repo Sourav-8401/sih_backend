@@ -192,7 +192,7 @@ const addTaskToProject = asyncHandler(async(req, res)=>{
 })
 const assignTask = asyncHandler(async(req, res)=>{
     const {workerPhoneNo, adminPhoneNo, taskOId} = req.body;
-
+    console.log(workerPhoneNo, adminPhoneNo, taskOId)
     if(!workerPhoneNo || !adminPhoneNo || !taskOId){
         throw new ApiError(401, "All fields required for assigningTask");
     }
@@ -206,8 +206,8 @@ const assignTask = asyncHandler(async(req, res)=>{
     }
     worker.assignedTask.push(taskOId);
 
-    task.assignedTo.phoneNo = workerPhoneNo;
-    task.assignedBy.phoneNo = adminPhoneNo;
+    task.assignedTo = workerPhoneNo;
+    task.assignedBy = adminPhoneNo;
     await task.save();
     await worker.save();
     return res.status(200).json({
@@ -222,7 +222,11 @@ const assignTask = asyncHandler(async(req, res)=>{
 //find project
 //group according to stages and arrange assending
 
-const getTaskByProjectId = asyncHandler(async (req,res)=>{
+//ek list banao groupedTask
+// ek similarTask list usko push karo
+//phir groupedTask .push(similarTask obj)
+
+const getGroupedTask = asyncHandler(async (req,res)=>{
     try {
             const {projectId} = req.body;
         
@@ -231,11 +235,58 @@ const getTaskByProjectId = asyncHandler(async (req,res)=>{
                     message: "ProjectId required"
                 })
             }
-            const tasks = await Task.find();
+            const project = await Project.findById(projectId);
+            const objectIdArray = project.tasks
+            const taskArray = objectIdArray.map(id => id.toString());
+            console.log(taskArray)
+            const rand = await Task.findById(taskArray[0]);
+            console.log(rand)
+            console.log(taskArray[0])
+
+            let taskStages = [
+                "Foundation",
+                "Pillar",
+                "Flooring",
+                "Bricks work",
+                "Plumbing",
+                "Electric",
+                "Plaster",
+                "Tiling",
+                "Putty work",
+                "Interior wooden work",
+                "Paint work",
+            ]
+            const tasks = await Task.find({
+                _id: { $in: taskArray }, // Retrieve tasks whose ids are in taskArray
+            });
+
+            const groupedTask = taskStages.map((stage) => ({
+                stage,
+                task: tasks.filter((task) => task.stages === stage) || [], // Filter tasks for the current stage
+            }));
+            
+            console.log(groupedTask);
+            return res.status(201).json({
+                groupedTask: groupedTask
+            })
         
     } catch (error) {
         throw new ApiError(501, error);
     }
 })
 
-export {fillTask, getAllTask, getTaskById, updateLocation, assignTask, addTaskToProject}
+const assignStage = asyncHandler(async(req,res)=>{
+    const {taskId, stage} = req.body
+    const task = await Task.findById(taskId);
+    task.stages = stage
+    const resTask = await task.save()
+    return res.status(200).json(resTask);
+})
+
+// const fillTest = asyncHandler(async(req,res)=>{
+//     const {taskId, tests} = req.body
+
+//     const 
+// })
+
+export {fillTask, getAllTask, getTaskById, updateLocation, assignTask, addTaskToProject, getGroupedTask,assignStage}

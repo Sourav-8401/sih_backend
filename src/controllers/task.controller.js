@@ -247,14 +247,14 @@ const getGroupedTask = asyncHandler(async (req,res)=>{
                 "Foundation",
                 "Pillar",
                 "Flooring",
-                "Bricks work",
+                "Bricking",
                 "Plumbing",
                 "Electric",
                 "Plaster",
                 "Tiling",
                 "Putty work",
                 "Interior wooden work",
-                "Paint work",
+                "Painting",
             ]
             const tasks = await Task.find({
                 _id: { $in: taskArray }, // Retrieve tasks whose ids are in taskArray

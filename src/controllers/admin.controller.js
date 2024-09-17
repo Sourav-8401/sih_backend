@@ -46,7 +46,7 @@ const registerAdmin = asyncHandler(async (req,res)=>{
 });
 
 const assignProject = asyncHandler(async(req, res)=>{
-    const {location, description, tasks, govBody, startDate, endDate, address, adminPhoneNo} = req.body;
+    let {location, description, tasks, govBody, startDate, endDate, address, adminPhoneNo} = req.body;
     console.log(govBody)
     const admin = await Admin.findOne({phoneNo: adminPhoneNo});
     if(!admin){
@@ -66,7 +66,10 @@ const assignProject = asyncHandler(async(req, res)=>{
             imgResArray.push(currImgPath.url);
         }
     }
-
+    if(location){
+        location = JSON.parse(location);
+        console.log(location.latitude);
+    }
     const project = await Project.create({
         img : imgResArray || "",
         location,

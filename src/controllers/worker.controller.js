@@ -3,6 +3,29 @@ import { Worker } from "../model/worker.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Task } from "../model/task.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
+
+
+const workerLogin = asyncHandler(async(req,res)=>{
+    const {phoneNo,otp} = req.body
+    if(!phoneNo){
+        throw new ApiError(401, "Phone no required")
+    }
+    if(!otp){
+        throw new ApiError(401, "Otp required")
+    }
+    if(otp != 787878){
+        return res.status(401).json({
+            message : "wrong otp",
+            value : false
+        })
+    }else{
+        return res.status(401).json({
+            message : "right otp",
+            value : true,
+            phoneNo : phoneNo
+        })
+    }
+})
 const registerWorker= asyncHandler(async(req,res)=>{
     const {fullName, phoneNo, location, isVerified, allotedArea, addhaarNo} = req.body;
     console.log(fullName)
@@ -65,5 +88,6 @@ const getWorkerTask = asyncHandler(async(req,res)=>{
 export {
     registerWorker,
     getWorker,
-    getWorkerTask
+    getWorkerTask,
+    workerLogin
 }

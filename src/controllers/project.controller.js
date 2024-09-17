@@ -17,7 +17,10 @@ const fillProject = asyncHandler(async (req,res)=>{
     }
     const imgResArray = []
     const imgFileArray = req.files['projectImg'];
-
+    if(location){
+        location = JSON.parse(location);
+        console.log("latitude:",location.latitude)
+    }
     for(let i=0; i<imgFileArray.length; i++){
         const currImgPath = uploadOnCloudinary(imgFileArray[i].path);
         if(!currImgPath){
@@ -33,6 +36,10 @@ const fillProject = asyncHandler(async (req,res)=>{
         tasks,
         govBody,
         startDate,
+        location: location ? {
+            latitude : location.latitude ,
+            longitude : location.longitude
+        }: {},
         endDate
     })
     const createdProject = await Project.findById(project._id)
@@ -50,4 +57,38 @@ const getAllProject = asyncHandler(async(req,res)=>{
         project
     )
 })
-export {fillProject, getAllProject}
+const updateLocation = asyncHandler(async(req, res)=>{
+    const {location, projectId} = req.body;
+    if(!projectId){
+        throw new ApiError("Project ID required");
+    }
+    console.log(location)
+    const project = await Project.findById(projectId);
+    const parsedLocation = JSON.parse(location)
+    project.location =  parsedLocation ? {
+        latitude : parsedLocation.latitude ,
+        longitude : parsedLocation.longitude
+    }: {},
+    await project.save();
+    return res.status(200).json(
+        project
+    )
+})
+/**
+ * getTask by projectId
+ * projectid
+ * project.tasks
+ * filter the tasks according to 
+ */
+const getTaskByProjectId = asyncHandler(async(req,res)=>{
+    const {projectId} = req.body;
+    if(!projectId){
+        throw new ApiError("Project ID required");
+    }
+    const project = await Project.findById(projectId);
+    const taskArray = project.tasks;
+
+    let resTaskArray = [];
+
+})
+export {fillProject, getAllProject, updateLocation}

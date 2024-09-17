@@ -5,6 +5,7 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { v4 as uuidv4 } from "uuid";
 import { Worker } from "../model/worker.model.js";
+import { Project } from "../model/project.model.js";
 
 const fillTask = asyncHandler(async (req, res)=>{
     let {taskTitle, govBody, description, location, tests, address, isVerified, startDate, endDate, progress,forProject, assignedBy, assignedTo, priority, stages, budgetAlloted} = req.body;
@@ -23,12 +24,15 @@ const fillTask = asyncHandler(async (req, res)=>{
     if(tests){
         tests = tests.replace("'", "");
     }
+    console.log(location);
+
     if(location){
-        location = location.replace("'", "");
+        location = JSON.parse(location);
+        console.log("latitude:",location.latitude)
     }
     console.log(tests)
     console.log(progress)
-    console.log(location)
+    console.log(typeof location)
 
     let taskImgArray = req.files['taskImg'];
     // console.log("taskImgARRAY: ", taskImgArray)
@@ -166,6 +170,26 @@ const updateProgress = asyncHandler(async (req, res)=>{
     }
 })
 
+
+//Task assign tarika
+// workerPhoneNo, adminPhoneNo, taskOId, projectId = req.body
+// ye wali task kon si project ki hai
+// ye task 
+
+
+const addTaskToProject = asyncHandler(async(req, res)=>{
+    const {taskId, projectId} = req.body;
+    const project = await Project.findById(projectId);
+    // const task = await Task.findById(taskId);
+    if(!project){
+        throw new ApiError(401, "TaskId, ProjectId required");
+    }
+    project.tasks.push(taskId);
+    const resProject = await project.save();
+    return res.status(200).json(
+        resProject
+    )
+})
 const assignTask = asyncHandler(async(req, res)=>{
     const {workerPhoneNo, adminPhoneNo, taskOId} = req.body;
 
@@ -181,11 +205,11 @@ const assignTask = asyncHandler(async(req, res)=>{
         throw new ApiError(501, "Task not found by given Id")
     }
     worker.assignedTask.push(taskOId);
+
     task.assignedTo.phoneNo = workerPhoneNo;
     task.assignedBy.phoneNo = adminPhoneNo;
     await task.save();
     await worker.save();
-
     return res.status(200).json({
         message : "task assigned successfully",
         task
@@ -212,8 +236,6 @@ const getTaskByProjectId = asyncHandler(async (req,res)=>{
     } catch (error) {
         throw new ApiError(501, error);
     }
-    
-
 })
 
-export {fillTask, getAllTask, getTaskById, updateLocation, assignTask}
+export {fillTask, getAllTask, getTaskById, updateLocation, assignTask, addTaskToProject}

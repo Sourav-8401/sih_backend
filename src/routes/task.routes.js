@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { assignTask, fillTask, getTask, getTaskById, updateLocation } from "../controllers/task.controller.js";
+import { assignTask, fillTask, getAllTask, getTaskById, updateLocation } from "../controllers/task.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
@@ -12,7 +12,7 @@ router.route("/fillTask").post(
         }
     ]),
     fillTask);
-router.route("/getTask").get(getTask);
+router.route("/getAllTask").get(getAllTask);
 router.route("/getTaskById").get(getTaskById)
 router.route("/updateLocation").post(updateLocation)
 router.route("/assignTask").post(

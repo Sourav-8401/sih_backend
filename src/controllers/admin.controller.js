@@ -10,7 +10,9 @@ const registerAdmin = asyncHandler(async (req,res)=>{
     const existedUser = await Admin.findOne({phoneNo : phoneNo});
     console.log("FullName",adminId);
     if(existedUser){
-        throw new ApiError(409, "User already existed")
+        return res.status(401).json({
+            message: "User already exist"
+        })
     }
     
     let avatar = req.file;
@@ -19,7 +21,7 @@ const registerAdmin = asyncHandler(async (req,res)=>{
     if(avatar){
         uploadAvatar = await uploadOnCloudinary(avatar?.path);
         if(!uploadAvatar){
-            throw new ApiError(400, "Something went wrong while uploading on cloudinary");
+            throw new ApiError(501, "Something went wrong while uploading on cloudinary");
         }
     }
 

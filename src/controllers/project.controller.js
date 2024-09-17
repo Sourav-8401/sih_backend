@@ -1,13 +1,12 @@
-import { Project } from "../model/project.model";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
-import uploadOnCloudinary from "../utils/cloudinary";
+import { Project } from "../model/project.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 import { v4 } from "uuid";
 /**
  * checks whether the req data are there are not
  * 
  */
-
 
 const fillProject = asyncHandler(async (req,res)=>{
     const {location, tasks, govBody, startDate, endDate} = req.body;
@@ -42,5 +41,13 @@ const fillProject = asyncHandler(async (req,res)=>{
     }
 })
 
-
-export {fillProject}
+const getAllProject = asyncHandler(async(req,res)=>{
+    const project = await Project.find();
+    if(!project){
+        throw new ApiError(401,"Project doesn't exist");
+    } 
+    return res.status(200).json(
+        project
+    )
+})
+export {fillProject, getAllProject}

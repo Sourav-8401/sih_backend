@@ -27,10 +27,9 @@ const registerWorker= asyncHandler(async(req,res)=>{
     if(!worker){
         throw new ApiError(500, "Something went wrong while uploading on datbase")
     }
-    return res.status(200).json({
-        message: "createdWorker",
+    return res.status(200).json(
         worker
-    })
+    )
 })
 
 const getWorker = asyncHandler(async (req,res)=>{
@@ -60,8 +59,7 @@ const getWorkerTask = asyncHandler(async(req,res)=>{
     }
 
     return res.status(201).json({
-        message: "task Fetched successfully",
-        data : resTask
+        resTask
     })
 })
 export {

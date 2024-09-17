@@ -20,8 +20,10 @@ import userRouter from "./routes/user.routes.js";
 import taskRouter from "./routes/task.routes.js";
 import adminRouter from "./routes/admin.routes.js"
 import workerRouter from "./routes/worker.routes.js"
+import projectRouter from "./routes/project.routes.js"
 app.use("/users",userRouter)
 app.use("/tasks",taskRouter)
 app.use("/admins",adminRouter)
 app.use("/worker",workerRouter)
+app.use("/projects",projectRouter)
 export {app}

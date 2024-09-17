@@ -5,33 +5,30 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { v4 as uuidv4 } from "uuid";
 import { Worker } from "../model/worker.model.js";
-/**
- * admin will allot the task 
- * post req of the -: building id , img, taskTitle, address, 
- *                    start date, end date, assigned, progress
- *                    address of the task req,
- * checks the req filled are there or not - ///
- * 
- * methods: 1. update address, 
- *          2. fill Task, ///
- *          3. getTask, gettask by id;
- *          4. post Location from worker of the site ///
- *          5. update the progress ///
- *          6. update images
- *          7. update the task
- */
+
 const fillTask = asyncHandler(async (req, res)=>{
-    const {taskTitle, govBody, location, test, address, isVerified, startDate, endDate, progress,} = req.body;
+    let {taskTitle, govBody, location, tests, address, isVerified, startDate, endDate, progress,forProject, assignedBy, assignedTo, priority, stages} = req.body;
     console.log("taskTitle", taskTitle);
     console.log("taskTitle", address);
-    // console.log(req.body);
+    console.log(req.body);
     
     if([taskTitle, address, startDate, endDate, progress].some((fields)=>{
         fields?.trim() === "";   
     })){
         throw new ApiError(401, "All fields required");
     }
-
+    if(progress){
+        progress = progress.replace("'", "");
+    }
+    if(tests){
+        tests = tests.replace("'", "");
+    }
+    if(location){
+        location = location.replace("'", "");
+    }
+    console.log(tests)
+    console.log(progress)
+    console.log(location)
 
     let taskImgArray = req.files['taskImg'];
     // console.log("taskImgARRAY: ", taskImgArray)
@@ -62,10 +59,31 @@ const fillTask = asyncHandler(async (req, res)=>{
             address,
             startDate,
             endDate,
-            progress,
-            test,
-            govBody
-
+            progress: progress ? {
+                prevProgress : {
+                    percentage: progress.prevProgress.percentage,
+                    updationTime : progress.prevProgress.updationTime
+                },
+                currProgress : {
+                    percentage : progress.currProgress.percentage,
+                    updationTime : progress.currProgress.updationTime
+                }
+            }: {},
+            tests: tests ? tests.push({
+                slumpTest : tests[0].slumpTest,
+                date : tests[0].date
+            }): [],
+            govBody,
+            location: location ? {
+                latitude : location.latitude ,
+                longitude : location.longitude
+            }: {},
+            assignedBy : assignedBy || "",
+            assignedTo : assignedTo || "",
+            forProject : forProject || "",
+            isVerified,
+            stages,
+            priority
     })
     const createdTask = await Task.findById(task._id)
     if(!createdTask){
@@ -76,13 +94,23 @@ const fillTask = asyncHandler(async (req, res)=>{
         // {message: "done"}
     )
 })
-const getTask = asyncHandler(async (req,res)=>{
+
+
+
+
+
+const getAllTask = asyncHandler(async (req,res)=>{
     const data = await Task.find();
     //write the code to get the tasks and return to response
-    res.status(200).json(
-        {message: "Tasks retrieved successfully",
+    if(!data){
+        return res.status(501).json({
+            message : "Something went wrong while retriving all task"
+        })
+    }
+    console.log(data)
+    return res.status(200).json(
         data
-    });
+    );
 })
 
 
@@ -163,4 +191,27 @@ const assignTask = asyncHandler(async(req, res)=>{
 
 })
 
-export {fillTask, getTask, getTaskById, updateLocation, assignTask}
+
+//take projectId
+//find project
+//group according to stages and arrange assending
+
+const getTaskByProjectId = asyncHandler(async (req,res)=>{
+    try {
+            const {projectId} = req.body;
+        
+            if(!projectId){
+                return res.status(401).json({
+                    message: "ProjectId required"
+                })
+            }
+            const tasks = await Task.find();
+        
+    } catch (error) {
+        throw new ApiError(501, error);
+    }
+    
+
+})
+
+export {fillTask, getAllTask, getTaskById, updateLocation, assignTask}

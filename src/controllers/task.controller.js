@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Worker } from "../model/worker.model.js";
 
 const fillTask = asyncHandler(async (req, res)=>{
-    let {taskTitle, govBody, location, tests, address, isVerified, startDate, endDate, progress,forProject, assignedBy, assignedTo, priority, stages} = req.body;
+    let {taskTitle, govBody, description, location, tests, address, isVerified, startDate, endDate, progress,forProject, assignedBy, assignedTo, priority, stages, budgetAlloted} = req.body;
     console.log("taskTitle", taskTitle);
     console.log("taskTitle", address);
     console.log(req.body);
@@ -83,7 +83,9 @@ const fillTask = asyncHandler(async (req, res)=>{
             forProject : forProject || "",
             isVerified,
             stages,
-            priority
+            priority,
+            description,
+            budgetAlloted
     })
     const createdTask = await Task.findById(task._id)
     if(!createdTask){

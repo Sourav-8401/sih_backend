@@ -21,10 +21,12 @@ const taskSchema = new mongoose.Schema({
     isVerified : { type: Boolean, default: false},
     startDate : Date,
     endDate : Date,
+    description: String,
     forProject : {
         type : mongoose.Schema.Types.ObjectId,
         ref: "Project"
     },
+    budgetAlloted : String,
     assignedBy : String, //Admin phone NO,
     assignedTo : String, //Worker phone NO,
     progress: {

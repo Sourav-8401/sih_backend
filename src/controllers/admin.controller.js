@@ -55,7 +55,7 @@ const assignProject = asyncHandler(async(req, res)=>{
 
     const imgResArray = []
     const imgFileArray = req.files;
-    // console.log(imgFileArray);
+    console.log(imgFileArray);
     if(imgFileArray){
         for(let i=0; i<imgFileArray.length; i++){
             const currImgPath = await uploadOnCloudinary(imgFileArray[i].path);

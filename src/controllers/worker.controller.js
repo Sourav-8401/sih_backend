@@ -13,7 +13,7 @@ const workerLogin = asyncHandler(async(req,res)=>{
     if(!otp){
         throw new ApiError(401, "Otp required")
     }
-    if(otp != 787878){
+    if(otp != 123){
         return res.status(401).json({
             message : "wrong otp",
             value : false

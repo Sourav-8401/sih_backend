@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTaskToProject, assignStage, assignTask, fillTask, getAllTask, getGroupedTask, getTaskById, updateLocation } from "../controllers/task.controller.js";
+import { addTaskToProject, assignStage, assignTask, fillTask, getAllTask, getGroupedTask, getTaskById, updateLocation, updateProgress, uploadTaskImg } from "../controllers/task.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import { getTaskByProjectId } from "../controllers/project.controller.js";
 
@@ -23,5 +23,6 @@ router.route("/addTaskToProject").post(upload.none(),
 addTaskToProject)
 router.route("/getGroupedTask").post(upload.none(), getGroupedTask)
 router.route("/assignStage").post(upload.none(), assignStage)
-
+router.route("/uploadTaskImg").post(upload.array('taskImg', 12),uploadTaskImg)
+router.route("/updateProgress").post(upload.none(), updateProgress)
 export default router

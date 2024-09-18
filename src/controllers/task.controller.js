@@ -154,21 +154,27 @@ const fillLocation = asyncHandler(async (req, res)=>{
         return ApiError(500, "Something went wrong while updating location")
     }
 })
-const updateProgress = asyncHandler(async (req, res)=>{
-    const {taskId, progress} = req.body;
+// const updateProgress = asyncHandler(async (req, res)=>{
+//     const {taskId, progress} = req.body;
 
-    if(progress === ""){
-        throw new  ApiError(401, 'progress required');
-    }
-    const task = await Task.updateOne({taskId: taskId}, {
-        $set : {
-            progress : progress
-        }
-    })
-    if(!task){
-        throw new ApiError(500, "Something went wrong while updating progress")
-    }
-})
+//     if(progress === ""){
+//         throw new  ApiError(401, 'progress required');
+//     }
+//     const task = await Task.updateOne({taskId: taskId}, {
+//         $set : {
+//             progress : {
+//                 currProgress : {
+//                     percentage : progress,
+//                     updationTime : Date.now
+//                 }
+//             }
+//         }
+//     })
+//     task.save();
+//     if(!task){
+//         throw new ApiError(500, "Something went wrong while updating progress")
+//     }
+// })
 
 
 //Task assign tarika
@@ -176,6 +182,35 @@ const updateProgress = asyncHandler(async (req, res)=>{
 // ye wali task kon si project ki hai
 // ye task 
 
+const updateProgress = asyncHandler(async (req, res) => {
+    const { taskId, progress } = req.body;
+    console.log(taskId, progress)
+    // Check if progress is provided
+    if (progress === "" || progress === undefined || progress === null) {
+        throw new ApiError(400, 'Progress is required');
+    }
+
+    // Find and update the task progress
+    const updatedTask = await Task.updateOne(
+        { _id: taskId },  // Corrected taskId query
+        {
+            $set: {
+                "progress.currProgress": {
+                    percentage: progress,
+                    updationTime: Date.now() // Call Date.now to get the current timestamp
+                }
+            }
+        }
+    );
+
+    // Check if update was successful
+    if (!updatedTask || updatedTask.nModified === 0) {
+        throw new ApiError(500, "Something went wrong while updating progress");
+    }
+
+    // Return success response
+    res.status(200).json({ message: "Task progress updated successfully" });
+});
 
 const addTaskToProject = asyncHandler(async(req, res)=>{
     const {taskId, projectId} = req.body;
@@ -283,10 +318,27 @@ const assignStage = asyncHandler(async(req,res)=>{
     return res.status(200).json(resTask);
 })
 
-// const fillTest = asyncHandler(async(req,res)=>{
-//     const {taskId, tests} = req.body
+const uploadTaskImg = asyncHandler(async(req,res)=>{
+    const {taskId} = req.body
+    const task = await Task.findById(taskId);
 
-//     const 
-// })
+    const imgFiles = req.files
+    const resArray = []
+    for(let i=0; i<imgFiles.length; i++){
+        const currUpload = await uploadOnCloudinary(imgFiles[i].path);
+        if(!currUpload){
+            throw new ApiError(500, "Something went wrong uploading on database");
+        }
+        resArray.push(currUpload.url);
+    }
 
-export {fillTask, getAllTask, getTaskById, updateLocation, assignTask, addTaskToProject, getGroupedTask,assignStage}
+    task.img = resArray
+    const response = await task.save();
+      return res.status(201).json(
+        {message : "img uploadation done",
+         reponse : response
+        }
+      )
+    })
+
+export {fillTask, getAllTask, getTaskById, updateLocation, assignTask, addTaskToProject, getGroupedTask,assignStage, uploadTaskImg, updateProgress}
